@@ -4,40 +4,69 @@ import { useShelfStore } from '../store/shelfStore'
 
 export function ReaderPanel() {
   const selectedIndex = useShelfStore((state) => state.selectedIndex)
+  const mode = useShelfStore((state) => state.mode)
   const close = useShelfStore((state) => state.close)
   const next = useShelfStore((state) => state.next)
   const previous = useShelfStore((state) => state.previous)
-  const closeButton = useRef<HTMLButtonElement>(null)
-  const book = selectedIndex === null ? null : BOOKS[selectedIndex]
+  const backButton = useRef<HTMLButtonElement>(null)
+  const book = BOOKS[selectedIndex]
 
   useEffect(() => {
-    if (book) closeButton.current?.focus()
-  }, [book])
+    if (mode === 'inspection') backButton.current?.focus()
+  }, [mode])
 
-  if (!book || selectedIndex === null) return null
+  if (mode !== 'inspection') return null
+
   return (
-    <aside className="reader" role="dialog" aria-modal="true" aria-labelledby="reader-title" data-testid="reader">
-      <div className="reader__topline">
-        <span>{book.kicker}</span><span>{String(selectedIndex + 1).padStart(2, '0')} / 07</span>
+    <section
+      className="inspection"
+      data-testid="inspection-mode"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="inspection-title"
+      style={{ '--book-accent': book.accent } as React.CSSProperties}
+    >
+      <div className="inspection__shade" />
+      <div className="inspection__book" aria-hidden="true">
+        <div className="inspection__cover">
+          <span className={`cover-motif cover-motif--${selectedIndex + 1}`} />
+          <small>{String(selectedIndex + 1).padStart(2, '0')} · HERMES ARCHIVE</small>
+          <strong>{book.title}</strong>
+          <i>PUBLIC KNOWLEDGE VOLUME</i>
+        </div>
+        <div className="inspection__pages" />
       </div>
-      <button ref={closeButton} className="icon-button reader__close" onClick={close} aria-label="리더 닫기">×</button>
-      <div className="reader__scroll">
-        <p className="reader__eyebrow">HERMES KNOWLEDGE SHELF</p>
-        <h2 id="reader-title">{book.title}</h2>
-        <p className="reader__summary">{book.summary}</p>
-        <div className="reader__rule" style={{ background: book.accent }} />
-        {book.sections.map((section) => (
-          <section key={section.heading}>
-            <h3>{section.heading}</h3>
-            <p>{section.body}</p>
-          </section>
-        ))}
-        <p className="reader__notice">공개 데모용 익명 샘플 데이터</p>
-      </div>
-      <nav className="reader__nav" aria-label="책 이동">
-        <button onClick={previous} aria-label="이전 책"><span>←</span> 이전</button>
-        <button onClick={next} aria-label="다음 책">다음 <span>→</span></button>
+
+      <article className="inspection__spread">
+        <header className="inspection__topline">
+          <span>{book.kicker}</span>
+          <span>{String(selectedIndex + 1).padStart(2, '0')} / 07</span>
+        </header>
+        <div className="inspection__copy">
+          <p className="inspection__eyebrow">SELECTED PUBLIC KNOWLEDGE</p>
+          <h2 id="inspection-title">{book.title}</h2>
+          <p className="inspection__summary">{book.summary}</p>
+          <div className="inspection__rule" />
+          <div className="inspection__sections">
+            {book.sections.map((section) => (
+              <section key={section.heading}>
+                <h3>{section.heading}</h3>
+                <p>{section.body}</p>
+              </section>
+            ))}
+          </div>
+          <p className="inspection__notice">PUBLIC DEMO · ANONYMOUS SAMPLE DATA</p>
+        </div>
+      </article>
+
+      <button ref={backButton} className="inspection__back" onClick={close} aria-label="BACK">
+        <span aria-hidden="true">←</span> BACK
+      </button>
+      <nav className="inspection__nav" aria-label="inspection 책 이동">
+        <button onClick={previous} aria-label="inspection 이전 책">‹</button>
+        <span>{String(selectedIndex + 1).padStart(2, '0')} / 07</span>
+        <button onClick={next} aria-label="inspection 다음 책">›</button>
       </nav>
-    </aside>
+    </section>
   )
 }

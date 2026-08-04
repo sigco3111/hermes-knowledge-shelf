@@ -14,6 +14,15 @@
 - allowlist 기반 공개 스키마 변환
 - 빌드 선행 개인정보 스캐너
 
+## v2 visual QA
+
+v2는 원본의 구도와 상호작용 문법만 관찰해 독립적으로 다시 만든 clean-room 구현입니다. 원본 저장소의 코드, geometry, shader, texture, embedded atlas, cover artwork는 복사하지 않았습니다.
+
+- 중앙 선택책은 14% 확대하고 카메라 쪽으로 전진하며, 이웃 책은 거리별 축소와 3–10° Y 회전으로 실제 box depth·spine·page edge를 드러냅니다.
+- 첫 권과 마지막 권은 row가 viewport를 살짝 넘도록 배치하고, shelf는 walnut top slab·fascia·다층 lower molding으로 구성했습니다.
+- cloth CanvasTexture의 격자 대비를 낮추고 미세 섬유만 남겼으며, 7권의 한국어 제목은 cover CanvasTexture에 fit-to-width로 그립니다.
+- `npm run test:e2e` 또는 `node scripts/verify-ui.mjs`가 desktop/mobile DOM, OPEN/ESC, keyboard/marker selection, request/page/console errors를 확인합니다.
+
 ## 공개 데이터 정책
 
 배포 번들에는 익명 통계와 명시적으로 공개 가능한 샘플 문장만 포함합니다. `npm run privacy-check`는 `src/`, `public/`, `sample-data/`의 번들 입력을 재귀 검사하며 이메일, 전화번호, 사용자 홈 경로, Hermes 비공개 경로, 자격증명 키워드, Telegram/Discord 식별자, 비공개 URL 패턴을 발견하면 종료 코드 1로 빌드를 차단합니다. 입력 데이터는 Zod allowlist 스키마를 통과한 필드만 앱에서 사용합니다.

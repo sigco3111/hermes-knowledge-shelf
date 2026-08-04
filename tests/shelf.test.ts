@@ -16,23 +16,27 @@ describe('public shelf catalogue', () => {
 })
 
 describe('shelf navigation store', () => {
-  beforeEach(() => useShelfStore.setState({ selectedIndex: null }))
+  beforeEach(() => useShelfStore.setState({ selectedIndex: 0, mode: 'shelf' }))
 
-  it('selects and closes a book', () => {
+  it('selects a book without opening it, then opens and closes inspection', () => {
     useShelfStore.getState().select(2)
-    expect(useShelfStore.getState().selectedIndex).toBe(2)
+    expect(useShelfStore.getState()).toMatchObject({ selectedIndex: 2, mode: 'shelf' })
+    useShelfStore.getState().open()
+    expect(useShelfStore.getState().mode).toBe('inspection')
     useShelfStore.getState().close()
-    expect(useShelfStore.getState().selectedIndex).toBeNull()
+    expect(useShelfStore.getState()).toMatchObject({ selectedIndex: 2, mode: 'shelf' })
   })
-  it('wraps previous and next navigation', () => {
-    useShelfStore.getState().select(0)
+
+  it('wraps previous and next navigation from the initial selection', () => {
     useShelfStore.getState().previous()
     expect(useShelfStore.getState().selectedIndex).toBe(6)
     useShelfStore.getState().next()
     expect(useShelfStore.getState().selectedIndex).toBe(0)
   })
-  it('ignores navigation while reader is closed', () => {
+
+  it('keeps navigation available while the shelf is not open', () => {
     useShelfStore.getState().next()
-    expect(useShelfStore.getState().selectedIndex).toBeNull()
+    expect(useShelfStore.getState().selectedIndex).toBe(1)
+    expect(useShelfStore.getState().mode).toBe('shelf')
   })
 })
