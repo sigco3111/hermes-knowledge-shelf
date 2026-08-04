@@ -1,7 +1,7 @@
 import { useFrame, useThree } from '@react-three/fiber'
 import { Text } from '@react-three/drei'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { Group, Mesh } from 'three'
+import type { Group } from 'three'
 import * as THREE from 'three'
 import { BOOKS } from '../data/books'
 import { useShelfStore } from '../store/shelfStore'
@@ -11,99 +11,23 @@ import {
   buildAllParts,
   cameraKeyframeFor,
   defaultBookmarkFor,
-  defaultCoverMaterial,
   defaultSpineMaterial,
   lightingRig,
   resolvePlacement,
 } from '../three/bookModel'
+import { buildCoverMaterial, buildWoodMaterial } from '../three/materials'
 
 const COVER_WIDTH = 1.72
 const COVER_HEIGHT = 2.62
 
-/** Foil line motif — three concentric scaled line loops + a hub disc + a bar. */
-function FoilMotif({ index }: { index: number }) {
-  const curve = useMemo(() => motifShape(index), [index])
-  const points = useMemo(() => curve.getPoints(80).map((p) => new THREE.Vector3(p.x, p.y, 0)), [curve])
-  const geometry = useMemo(() => new THREE.BufferGeometry().setFromPoints(points), [points])
-  const color = index === 3 || index === 4 ? '#191715' : '#e8c783'
-
-  return (
-    <group position={[0, 0.12, 0.256 + 0.004]}>
-      {[0, 1, 2].map((ring) => (
-        <lineLoop key={ring} geometry={geometry} scale={[1 + ring * 0.18, 1 + ring * 0.18, 1]}>
-          <lineBasicMaterial color={color} transparent opacity={0.72 - ring * 0.14} />
-        </lineLoop>
-      ))}
-      <mesh position={[0, 0, -0.002]}>
-        <ringGeometry args={[0.075, 0.105, 28]} />
-        <meshBasicMaterial color={index === 3 || index === 4 ? '#191715' : '#f1d99a'} transparent opacity={0.78} />
-      </mesh>
-      <mesh position={[0, -0.86, -0.002]}>
-        <boxGeometry args={[0.58, 0.012, 0.01]} />
-        <meshBasicMaterial color={color} transparent opacity={0.6} />
-      </mesh>
-    </group>
-  )
-}
-
-function motifShape(index: number) {
-  const shape = new THREE.Shape()
-  const motifs = [
-    () => {
-      shape.moveTo(-0.43, 0)
-      shape.bezierCurveTo(-0.42, 0.7, 0.42, 0.7, 0.43, 0)
-      shape.bezierCurveTo(0.42, -0.7, -0.42, -0.7, -0.43, 0)
-    },
-    () => {
-      shape.moveTo(0, 0.7)
-      shape.lineTo(0.48, 0)
-      shape.lineTo(0, -0.7)
-      shape.lineTo(-0.48, 0)
-      shape.closePath()
-    },
-    () => {
-      shape.moveTo(-0.48, 0.5)
-      shape.bezierCurveTo(-0.05, 0.8, 0.35, 0.42, 0.1, 0.08)
-      shape.bezierCurveTo(-0.2, -0.22, 0.02, -0.62, 0.48, -0.5)
-      shape.bezierCurveTo(0.18, -0.12, -0.17, 0.15, -0.48, 0.5)
-    },
-    () => {
-      shape.moveTo(-0.46, -0.58)
-      shape.lineTo(-0.46, 0.08)
-      shape.bezierCurveTo(-0.46, 0.62, 0.46, 0.62, 0.46, 0.08)
-      shape.lineTo(0.46, -0.58)
-      shape.lineTo(0.2, -0.25)
-      shape.lineTo(-0.2, -0.25)
-      shape.closePath()
-    },
-    () => {
-      shape.moveTo(-0.48, 0.55)
-      shape.lineTo(0.38, 0.3)
-      shape.lineTo(-0.34, 0.02)
-      shape.lineTo(0.48, -0.2)
-      shape.lineTo(-0.2, -0.58)
-      shape.closePath()
-    },
-    () => {
-      shape.moveTo(-0.42, 0.62)
-      shape.bezierCurveTo(0.55, 0.45, -0.5, -0.42, 0.42, -0.62)
-      shape.bezierCurveTo(-0.2, -0.18, 0.2, 0.18, -0.42, 0.62)
-    },
-    () => {
-      shape.moveTo(0, 0.7)
-      shape.bezierCurveTo(0.52, 0.38, 0.52, -0.38, 0, -0.7)
-      shape.bezierCurveTo(-0.52, -0.38, -0.52, 0.38, 0, 0.7)
-      shape.moveTo(-0.45, 0)
-      shape.bezierCurveTo(-0.12, 0.3, 0.12, -0.3, 0.45, 0)
-    },
-  ]
-  motifs[index]()
-  return shape
-}
-
 /**
  * Render one volume by walking the part list emitted by buildAllParts.
  * Pure helper data drives every transform — see bookModel.ts.
+ *
+ * Note: the foil stamp is now part of buildAllParts (foilBoard in bookModel),
+ * rendered as a separate mesh that sits 0.003 in front of the cover with its
+ * own metallic material. The legacy FoilMotif lineLoop has been removed so
+ * the shelf no longer renders two competing foil surfaces.
  */
 function Volume({ index }: { index: number }) {
   const book = BOOKS[index]
@@ -120,7 +44,7 @@ function Volume({ index }: { index: number }) {
   const titleTexture = useMemo(() => getCoverTitleTexture(book.title, index, book.accent), [book.title, book.accent, index])
   const materials = useMemo(
     () => ({
-      coverMaterial: defaultCoverMaterial(book.accent, clothTexture),
+      coverMaterial: buildCoverMaterial(book.accent, clothTexture),
       spineMaterial: defaultSpineMaterial(clothTexture),
     }),
     [book.accent, clothTexture],
@@ -151,14 +75,12 @@ function Volume({ index }: { index: number }) {
     ref.current.scale.setScalar(nextScale)
   })
 
+  const initialPlacement = resolvePlacement(index, selected, mode, typeof window === 'undefined' ? 1440 : window.innerWidth)
+
   return (
     <group
       ref={ref}
-      position={[
-        resolvePlacement(index, selected, mode, typeof window === 'undefined' ? 1440 : window.innerWidth).position.x,
-        resolvePlacement(index, selected, mode, typeof window === 'undefined' ? 1440 : window.innerWidth).position.y,
-        resolvePlacement(index, selected, mode, typeof window === 'undefined' ? 1440 : window.innerWidth).position.z,
-      ]}
+      position={[initialPlacement.position.x, initialPlacement.position.y, initialPlacement.position.z]}
       onClick={(event) => {
         event.stopPropagation()
         if (index === selected) open()
@@ -183,8 +105,6 @@ function Volume({ index }: { index: number }) {
           material={part.material}
         />
       ))}
-
-      <FoilMotif index={index} />
 
       {/* Title texture floats 0.003 in front of the cover so it catches light
           like foil without competing with the actual foil motif. Cover
@@ -235,43 +155,43 @@ function CinematicCamera() {
 }
 
 function WalnutShelf() {
+  // Build the wood material once per shelf — pure walnut tone, mid-roughness,
+  // no metalness so it reads as stained timber rather than lacquer.
+  const wood = useMemo(() => buildWoodMaterial('#3b2118'), [])
+  const woodAccent = useMemo(() => buildWoodMaterial('#5a3324'), [])
+  const woodShadow = useMemo(() => buildWoodMaterial('#24130f'), [])
+  const woodDeep = useMemo(() => buildWoodMaterial('#130b09'), [])
+  const woodPlank = useMemo(() => buildWoodMaterial('#2b1712'), [])
+  const woodRim = useMemo(() => buildWoodMaterial('#4a2a1d'), [])
+
   return (
     <group position={[0, -1.82, -0.16]}>
-      <mesh position={[0, 0.58, -0.78]} receiveShadow castShadow>
+      <mesh position={[0, 0.58, -0.78]} receiveShadow castShadow material={woodAccent}>
         <boxGeometry args={[32, 0.11, 0.16]} />
-        <meshStandardMaterial color="#5a3324" roughness={0.72} />
       </mesh>
-      <mesh position={[0, 0.25, -0.04]} receiveShadow castShadow>
+      <mesh position={[0, 0.25, -0.04]} receiveShadow castShadow material={wood}>
         <boxGeometry args={[32, 0.2, 2.34]} />
-        <meshStandardMaterial color="#3b2118" roughness={0.6} />
       </mesh>
-      <mesh position={[0, 0.365, 0.04]} receiveShadow>
+      <mesh position={[0, 0.365, 0.04]} receiveShadow material={woodAccent}>
         <boxGeometry args={[32, 0.035, 2.12]} />
-        <meshStandardMaterial color="#6b3e29" roughness={0.66} />
       </mesh>
-      <mesh position={[0, 0.14, 0.96]} receiveShadow castShadow>
+      <mesh position={[0, 0.14, 0.96]} receiveShadow castShadow material={woodRim}>
         <boxGeometry args={[32, 0.18, 0.16]} />
-        <meshStandardMaterial color="#4a2a1d" roughness={0.62} />
       </mesh>
-      <mesh position={[0, -0.01, 0.91]} receiveShadow castShadow>
+      <mesh position={[0, -0.01, 0.91]} receiveShadow castShadow material={woodShadow}>
         <boxGeometry args={[32, 0.3, 0.26]} />
-        <meshStandardMaterial color="#24130f" roughness={0.7} />
       </mesh>
-      <mesh position={[0, -0.2, 0.98]} receiveShadow castShadow>
+      <mesh position={[0, -0.2, 0.98]} receiveShadow castShadow material={woodAccent}>
         <boxGeometry args={[32, 0.12, 0.38]} />
-        <meshStandardMaterial color="#5a3222" roughness={0.66} />
       </mesh>
-      <mesh position={[0, -0.34, 1.02]} receiveShadow castShadow>
+      <mesh position={[0, -0.34, 1.02]} receiveShadow castShadow material={woodPlank}>
         <boxGeometry args={[32, 0.105, 0.47]} />
-        <meshStandardMaterial color="#2b1712" roughness={0.76} />
       </mesh>
-      <mesh position={[0, -0.47, 1.06]} receiveShadow castShadow>
+      <mesh position={[0, -0.47, 1.06]} receiveShadow castShadow material={woodAccent}>
         <boxGeometry args={[32, 0.095, 0.54]} />
-        <meshStandardMaterial color="#45271c" roughness={0.72} />
       </mesh>
-      <mesh position={[0, -0.575, 1.08]} receiveShadow>
+      <mesh position={[0, -0.575, 1.08]} receiveShadow material={woodDeep}>
         <boxGeometry args={[32, 0.035, 0.56]} />
-        <meshStandardMaterial color="#130b09" roughness={0.86} />
       </mesh>
     </group>
   )

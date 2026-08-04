@@ -2,6 +2,14 @@ import * as THREE from 'three'
 import { BOOKS } from '../data/books'
 import { computeBookPlacement } from './bookPlacement'
 import type { ShelfMode } from './bookPlacement'
+import {
+  buildCoverMaterial,
+  buildFoilMaterial,
+  buildHeadbandMaterial,
+  buildPageMaterial,
+  buildWoodMaterial,
+  FOIL_FORWARD_OFFSET,
+} from './materials'
 
 /**
  * Multi-part book geometry for a bound volume.
@@ -30,7 +38,7 @@ export type BookPartMesh = {
   castShadow: boolean
   receiveShadow: boolean
   /** parent slot this part belongs to — used for debugging/test introspection */
-  slot: 'cover' | 'spine' | 'paper' | 'edge' | 'headband' | 'hinge' | 'ribbon'
+  slot: 'cover' | 'spine' | 'paper' | 'edge' | 'headband' | 'hinge' | 'ribbon' | 'foil' | 'wood'
 }
 
 export type BookPartSpec = BookPartMesh[]
@@ -49,17 +57,21 @@ export const BOOK_PART_SLOTS = [
   'headband',
   'hinge',
   'ribbon',
+  'foil',
+  'wood',
 ] as const
 
 // Front cover geometry: the cloth board is the dominant silhouette piece.
 // 1.72 × 2.62 × 0.48 matches the catalogue's BOOK_WIDTH/BOOK_HEIGHT/BOOK_DEPTH.
 const COVER_GEOMETRY = new THREE.BoxGeometry(1.72, 2.62, 0.48)
+const FOIL_GEOMETRY = new THREE.PlaneGeometry(1.0, 1.0, 1, 1)
+const COVER_FRONT_Z = 0.24
 
 /**
  * Front cover (cloth board + inset title texture + foil motif). The cover
  * board is the largest single part so it sets the silhouette.
  */
-function frontBoard(_accent: string, coverMaterial: THREE.Material): BookPartMesh {
+function frontBoard(accent: string, coverMaterial: THREE.Material): BookPartMesh {
   return {
     geometry: COVER_GEOMETRY,
     material: coverMaterial,
@@ -67,6 +79,25 @@ function frontBoard(_accent: string, coverMaterial: THREE.Material): BookPartMes
     castShadow: true,
     receiveShadow: true,
     slot: 'cover',
+  }
+}
+
+/**
+ * Foil plane — a thin sheet sitting 0.003 in front of the cover that
+ * carries the line motif. Distinct material (metalness 0.92 / roughness
+ * 0.2) so only this surface picks up the specular highlights under
+ * raking light, exactly like a real foil stamp.
+ */
+function foilBoard(index: number): BookPartMesh {
+  // Different accent per book so each cover's foil reads independently
+  const color = index === 3 || index === 4 ? '#191715' : '#e8c783'
+  return {
+    geometry: FOIL_GEOMETRY,
+    material: buildFoilMaterial(color),
+    position: [0, 0, COVER_FRONT_Z + FOIL_FORWARD_OFFSET],
+    castShadow: false,
+    receiveShadow: false,
+    slot: 'foil',
   }
 }
 
@@ -130,7 +161,7 @@ function paperBlock(): BookPartMesh[] {
   return [
     {
       geometry: new THREE.BoxGeometry(0.24, 2.41, 0.42),
-      material: new THREE.MeshStandardMaterial({ color: '#ddd4c3', roughness: 0.94 }),
+      material: buildPageMaterial('#ddd4c3'),
       position: [0.86 - 0.12, 0, -0.02],
       castShadow: true,
       receiveShadow: true,
@@ -138,7 +169,7 @@ function paperBlock(): BookPartMesh[] {
     },
     {
       geometry: new THREE.BoxGeometry(0.18, 2.39, 0.4),
-      material: new THREE.MeshStandardMaterial({ color: '#c9b994', roughness: 0.96 }),
+      material: buildPageMaterial('#c9b994'),
       position: [0.86 - 0.09, 0, -0.05],
       castShadow: false,
       receiveShadow: true,
@@ -155,7 +186,7 @@ function pageEdgeLayers(): BookPartMesh[] {
   return [
     {
       geometry: new THREE.BoxGeometry(0.085, 2.41, 0.024),
-      material: new THREE.MeshStandardMaterial({ color: '#e9e1d2', roughness: 0.9 }),
+      material: buildPageMaterial('#e9e1d2'),
       position: [0.86 - 0.04, 0, 0.225],
       castShadow: true,
       receiveShadow: true,
@@ -163,7 +194,7 @@ function pageEdgeLayers(): BookPartMesh[] {
     },
     {
       geometry: new THREE.BoxGeometry(0.05, 2.41, 0.018),
-      material: new THREE.MeshStandardMaterial({ color: '#cdbfa6', roughness: 0.92 }),
+      material: buildPageMaterial('#cdbfa6'),
       position: [0.86 - 0.024, 0, 0.225],
       castShadow: false,
       receiveShadow: true,
@@ -171,7 +202,7 @@ function pageEdgeLayers(): BookPartMesh[] {
     },
     {
       geometry: new THREE.BoxGeometry(0.018, 2.41, 0.014),
-      material: new THREE.MeshStandardMaterial({ color: '#9b8d75', roughness: 0.96 }),
+      material: buildPageMaterial('#9b8d75'),
       position: [0.86 - 0.01, 0, 0.225],
       castShadow: false,
       receiveShadow: true,
@@ -193,7 +224,7 @@ function headbands(accent: string): BookPartMesh[] {
   return [
     {
       geometry: new THREE.BoxGeometry(0.2, 0.05, 0.46),
-      material: new THREE.MeshStandardMaterial({ color, roughness: 0.78 }),
+      material: buildHeadbandMaterial(color),
       position: [0.78, 1.2, -0.02],
       castShadow: false,
       receiveShadow: true,
@@ -201,7 +232,7 @@ function headbands(accent: string): BookPartMesh[] {
     },
     {
       geometry: new THREE.BoxGeometry(0.2, 0.05, 0.46),
-      material: new THREE.MeshStandardMaterial({ color, roughness: 0.78 }),
+      material: buildHeadbandMaterial(color),
       position: [0.78, -1.2, -0.02],
       castShadow: false,
       receiveShadow: true,
@@ -235,7 +266,8 @@ function bookmarkRibbon(accent: string): BookPartMesh {
 /**
  * Compose all parts for a single volume. Order in the returned array is
  * draw order; back-to-front: back board, spine, paper, edges, headbands,
- * ribbon (optional), then cover with title + foil on top.
+ * ribbon (optional), then cover, then the foil plane that sits 0.003 in
+ * front of the cover.
  */
 export function buildBookParts(input: BookModelInput, materials: BookMaterials): BookPartSpec {
   const parts: BookPartSpec = [
@@ -248,6 +280,9 @@ export function buildBookParts(input: BookModelInput, materials: BookMaterials):
   if (input.bookmark) parts.push(bookmarkRibbon(input.accent))
   // cover on top so the title texture is the last thing drawn
   parts.push(frontBoard(input.accent, materials.coverMaterial))
+  // foil stamp sits 0.003 in front of the cover, separate material so
+  // only this surface reacts to specular highlights
+  parts.push(foilBoard(input.index))
   return parts
 }
 
@@ -257,22 +292,12 @@ export type BookMaterials = {
 }
 
 /**
- * Per-cover material factory. Kept as a function so tests can stub the
- * procedural cloth texture without depending on a CanvasTexture that needs
- * a DOM. Production callers use getClothTexture from clothTexture.ts.
+ * Per-cover material factory. Cover materials are now sourced from
+ * ./materials.ts (buildCoverMaterial) so all four material bands — cover,
+ * foil, page, wood — live in a single place with the same roughness /
+ * metalness discipline.
  */
 export type CoverMaterialFactory = (accent: string) => THREE.Material
-
-export function defaultCoverMaterial(accent: string, texture: THREE.Texture | null): THREE.Material {
-  return new THREE.MeshStandardMaterial({
-    color: '#ffffff',
-    map: texture ?? undefined,
-    roughness: 0.72,
-    metalness: 0.03,
-    bumpMap: texture ?? undefined,
-    bumpScale: 0.008,
-  })
-}
 
 export function defaultSpineMaterial(texture: THREE.Texture | null): THREE.Material {
   return new THREE.MeshStandardMaterial({
