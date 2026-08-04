@@ -1,0 +1,79 @@
+[
+  {
+    "id": "activity",
+    "title": "에르메스 활동",
+    "kicker": "ACTIVITY PULSE",
+    "summary": "익명화된 흐름으로 보는 에르메스의 공개 활동 샘플입니다.",
+    "accent": "#6FE7D2",
+    "sections": [
+      { "heading": "흐름", "body": "아이디어를 작업 단위로 나누고, 실행 결과를 검증 가능한 산출물로 연결합니다." },
+      { "heading": "공개 지표", "body": "완료 24 · 검증 18 · 개선 7. 이 숫자는 제품 시연을 위한 익명 샘플입니다." }
+    ]
+  },
+  {
+    "id": "automation",
+    "title": "자동화",
+    "kicker": "QUIET SYSTEMS",
+    "summary": "반복 작업을 작고 관찰 가능한 파이프라인으로 바꾼 공개 예시입니다.",
+    "accent": "#FFCB77",
+    "sections": [
+      { "heading": "원칙", "body": "수집, 변환, 검증, 알림을 분리해 실패 지점을 명확하게 만듭니다." },
+      { "heading": "샘플 상태", "body": "정상 12 · 대기 3 · 점검 1. 실제 운영 정보가 아닌 인터페이스 데모 값입니다." }
+    ]
+  },
+  {
+    "id": "public-projects",
+    "title": "공개 프로젝트",
+    "kicker": "OPEN WORKS",
+    "summary": "공개 가능한 실험과 도구를 주제별로 탐색하는 카탈로그입니다.",
+    "accent": "#FF8066",
+    "sections": [
+      { "heading": "컬렉션", "body": "인터랙티브 시각화, 작은 개발 도구, 학습용 게임을 독립된 공개 작업으로 정리합니다." },
+      { "heading": "선정 기준", "body": "재현 가능성, 설명 가능성, 명확한 라이선스를 공개 전 필수 조건으로 둡니다." }
+    ]
+  },
+  {
+    "id": "knowledge-wiki",
+    "title": "지식 위키",
+    "kicker": "CONNECTED NOTES",
+    "summary": "읽고 만든 것을 연결해 다음 탐색의 출발점으로 만드는 공개 지식 지도입니다.",
+    "accent": "#9D8CFF",
+    "sections": [
+      { "heading": "구조", "body": "개념, 도구, 사례를 짧은 노드로 만들고 관련 항목 사이에 맥락을 연결합니다." },
+      { "heading": "샘플 토픽", "body": "에이전트 설계 · 인터랙션 · 데이터 시각화 · 테스트 전략." }
+    ]
+  },
+  {
+    "id": "publishing",
+    "title": "발행 기록",
+    "kicker": "PUBLIC LOG",
+    "summary": "공개 콘텐츠가 초안에서 검토와 발행으로 이동하는 과정을 보여줍니다.",
+    "accent": "#69B8FF",
+    "sections": [
+      { "heading": "파이프라인", "body": "주제 선택 → 근거 확인 → 초안 → 개인정보 점검 → 공개 발행 순서로 진행합니다." },
+      { "heading": "샘플 리듬", "body": "초안 5 · 검토 3 · 발행 2. 실제 계정 활동과 무관한 예시입니다." }
+    ]
+  },
+  {
+    "id": "recovery",
+    "title": "에러와 복구",
+    "kicker": "RESILIENT LOOPS",
+    "summary": "문제를 숨기지 않고 감지, 진단, 복구, 학습으로 전환하는 패턴입니다.",
+    "accent": "#EF6F93",
+    "sections": [
+      { "heading": "복구 루프", "body": "증상을 기록하고 원인을 좁힌 뒤 가장 작은 수정과 회귀 검증을 수행합니다." },
+      { "heading": "공개 원칙", "body": "사례는 구조만 공유하며 식별자, 원문, 내부 주소는 포함하지 않습니다." }
+    ]
+  },
+  {
+    "id": "learning",
+    "title": "에르메스의 학습",
+    "kicker": "LEARNING TRAILS",
+    "summary": "실행에서 얻은 교훈을 재사용 가능한 절차로 다듬는 마지막 서가입니다.",
+    "accent": "#B7F06B",
+    "sections": [
+      { "heading": "학습 방식", "body": "결과보다 과정의 선택과 실패 신호를 기록해 다음 작업의 출발 비용을 낮춥니다." },
+      { "heading": "다음 질문", "body": "무엇을 더 단순하게 만들 수 있는가? 무엇을 자동 검증할 수 있는가?" }
+    ]
+  }
+]

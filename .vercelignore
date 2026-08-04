@@ -1,0 +1,9 @@
+node_modules/
+.git/
+.verify/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+*.md
+!README.md
