@@ -1,0 +1,76 @@
+[
+  {
+    "id": "activity",
+    "title": "에르메스 활동",
+    "kicker": "ACTIVITY PULSE",
+    "summary": "익명화된 흐름으로 보는 에르메스의 공개 활동 샘플입니다.",
+    "accent": "#D86552",
+    "sections": [
+      { "id": "04bad26a62d5", "heading": "흐름", "body": "아이디어를 작업 단위로 나누고, 실행 결과를 검증 가능한 산출물로 연결합니다." },
+      { "id": "6b76a4d12fd6", "heading": "공개 지표", "body": "완료 24 · 검증 18 · 개선 7. 이 숫자는 제품 시연을 위한 익명 샘플입니다." },
+      { "id": "0b4336275fdd", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 17 · 공개 저장소 242." },
+      { "id": "905c01625bbf", "heading": "공개 지표", "body": "pinned 100 · 최근 push 5 · 팔로워 17." }
+    ]
+  },
+  {
+    "id": "automation",
+    "title": "자동화",
+    "kicker": "QUIET SYSTEMS",
+    "summary": "반복 작업을 작고 관찰 가능한 파이프라인으로 바꾼 공개 예시입니다.",
+    "accent": "#9BB7BE",
+    "sections": [
+      { "id": "026015bd48b0", "heading": "원칙", "body": "수집, 변환, 검증, 알림을 분리해 실패 지점을 명확하게 만듭니다." },
+      { "id": "a037a16ca970", "heading": "샘플 상태", "body": "정상 12 · 대기 3 · 점검 1. 실제 운영 정보가 아닌 인터페이스 데모 값입니다." },
+      { "id": "956fc960620d", "heading": "샘플 상태", "body": "그래프 노드 0 · auto-updated 뱃지 활성 (0 이슈)." }
+    ]
+  },
+  {
+    "id": "public-projects",
+    "title": "공개 프로젝트",
+    "kicker": "OPEN WORKS",
+    "summary": "공개 가능한 실험과 도구를 주제별로 탐색하는 카탈로그입니다.",
+    "accent": "#C86C43",
+    "sections": [
+      { "id": "13a84c7caa9c", "heading": "컬렉션", "body": "인터랙티브 시각화, 작은 개발 도구, 학습용 게임을 독립된 공개 작업으로 정리합니다." },
+      { "id": "84af906d13e8", "heading": "선정 기준", "body": "재현 가능성, 설명 가능성, 명확한 라이선스를 공개 전 필수 조건으로 둡니다." },
+      { "id": "1a0b9d8ae115", "heading": "컬렉션", "body": "공개 repo 100개 · 언어 다양성 10종." },
+      { "id": "dce3e1459805", "heading": "최근 추가", "body": "1. clipboard-history-mac · 2. clipboard-history · 3. agent-device · 4. asciirogue · 5. dnb-action-rpg" }
+    ]
+  },
+  {
+    "id": "knowledge-wiki",
+    "title": "지식 위키",
+    "kicker": "CONNECTED NOTES",
+    "summary": "읽고 만든 것을 연결해 다음 탐색의 출발점으로 만드는 공개 지식 지도입니다.",
+    "accent": "#354767",
+    "sections": [
+      { "id": "8d8d1fd9b8d8", "heading": "구조", "body": "개념, 도구, 사례를 짧은 노드로 만들고 관련 항목 사이에 맥락을 연결합니다." },
+      { "id": "26e3cc0c42d2", "heading": "샘플 토픽", "body": "에이전트 설계 · 인터랙션 · 데이터 시각화 · 테스트 전략." },
+      { "id": "fc473c61488d", "heading": "샘플 토픽", "body": "스킬 0★ · 지식 노드 2★." }
+    ]
+  },
+  {
+    "id": "recovery",
+    "title": "에러와 복구",
+    "kicker": "RESILIENT LOOPS",
+    "summary": "문제를 숨기지 않고 감지, 진단, 복구, 학습으로 전환하는 패턴입니다.",
+    "accent": "#36559B",
+    "sections": [
+      { "id": "815c8c594077", "heading": "복구 루프", "body": "증상을 기록하고 원인을 좁힌 뒤 가장 작은 수정과 회귀 검증을 수행합니다." },
+      { "id": "bdcbda5b725f", "heading": "공개 원칙", "body": "사례는 구조만 공유하며 식별자, 원문, 내부 주소는 포함하지 않습니다." },
+      { "id": "15f14ea81773", "heading": "공개 원칙", "body": "사례는 구조만 공유하며 식별자, 원문, 내부 주소는 포함하지 않습니다. (PAT 부재로 공개 데이터만 사용.)" }
+    ]
+  },
+  {
+    "id": "learning",
+    "title": "에르메스의 학습",
+    "kicker": "LEARNING TRAILS",
+    "summary": "실행에서 얻은 교훈을 재사용 가능한 절차로 다듬는 마지막 서가입니다.",
+    "accent": "#765F8E",
+    "sections": [
+      { "id": "8c280bc675ad", "heading": "학습 방식", "body": "결과보다 과정의 선택과 실패 신호를 기록해 다음 작업의 출발 비용을 낮춥니다." },
+      { "id": "807bdbb3fae4", "heading": "다음 질문", "body": "무엇을 더 단순하게 만들 수 있는가? 무엇을 자동 검증할 수 있는가?" },
+      { "id": "c1af411b5110", "heading": "다음 질문", "body": "무엇을 더 단순하게 만들 수 있는가? 무엇을 자동 검증할 수 있는가? 누적 스킬 0★ · 카테고리 0." }
+    ]
+  }
+]
