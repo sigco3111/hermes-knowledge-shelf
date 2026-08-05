@@ -49,6 +49,9 @@ jobs:
       - name: merge into books.public.json
         run: node .github/scripts/merge-books.mjs --input .cache/transformed.json --current src/data/books.public.json --output src/data/books.public.json
 
+      - name: copy to public asset
+        run: cp src/data/books.public.json public/books.public.json
+
       - name: privacy check
         run: npm run privacy-check
 
