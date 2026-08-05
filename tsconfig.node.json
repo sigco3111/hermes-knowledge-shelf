@@ -7,11 +7,13 @@
     "skipLibCheck": true,
     "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
+    "allowJs": true,
+    "checkJs": false,
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
     "strict": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "scripts", "tests/**/*.test.ts"]
+  "include": ["vite.config.ts", "scripts", "tests/**/*.test.ts", ".github/scripts/**/*.mjs"]
 }

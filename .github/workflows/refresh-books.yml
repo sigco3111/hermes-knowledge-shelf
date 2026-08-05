@@ -1,0 +1,80 @@
+name: refresh-books
+
+on:
+  schedule:
+    # 0 0 * * * UTC = 09:00 KST (매일 아침).
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Run the pipeline end-to-end without committing, pushing, or notifying Vercel.'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh-books
+  cancel-in-progress: true
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: install
+        run: npm ci
+
+      - name: fetch books
+        env:
+          SIGCO_GITHUB_PAT: ${{ secrets.SIGCO_GITHUB_PAT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node .github/scripts/fetch-books.mjs --out .cache/fetched
+
+      - name: transform books
+        run: npx tsx .github/scripts/transform-books.mjs --input .cache/fetched --output .cache/transformed.json
+
+      - name: merge into books.public.json
+        run: node .github/scripts/merge-books.mjs --input .cache/transformed.json --current src/data/books.public.json --output src/data/books.public.json
+
+      - name: privacy check
+        run: npm run privacy-check
+
+      - name: typecheck
+        run: npm run typecheck
+
+      - name: detect changes
+        id: diff
+        run: |
+          if [ -n "$(git status --porcelain src/data/books.public.json)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: commit
+        if: ${{ github.event.inputs.dry_run != 'true' && steps.diff.outputs.changed == 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/books.public.json
+          git commit -m "chore(refresh): update books.public.json from GitHub signals [skip ci]"
+          git push
+
+      - name: notify vercel
+        if: ${{ github.event.inputs.dry_run != 'true' && steps.diff.outputs.changed == 'true' }}
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: node .github/scripts/post-to-vercel.mjs

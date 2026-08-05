@@ -14,7 +14,14 @@
     "test:visual": "playwright test",
     "test:e2e": "playwright test",
     "privacy-check": "tsx scripts/privacy-check.ts",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "sync:content:fetch": "node .github/scripts/fetch-books.mjs --out .cache/fetched",
+    "sync:content:transform": "tsx .github/scripts/transform-books.mjs --input .cache/fetched --output .cache/transformed.json",
+    "sync:content:merge": "node .github/scripts/merge-books.mjs --input .cache/transformed.json --current src/data/books.public.json --output src/data/books.public.json",
+    "sync:content:post-vercel": "node .github/scripts/post-to-vercel.mjs",
+    "sync:content": "npm run sync:content:fetch && npm run sync:content:transform && npm run sync:content:merge && npm run privacy-check && npm run typecheck && node .github/scripts/post-to-vercel.mjs",
+    "sync:content:dry-run": "node .github/scripts/fetch-books.mjs --mock tests/fixtures --out .cache/fetched && tsx .github/scripts/transform-books.mjs --input .cache/fetched --output .cache/transformed.json && node .github/scripts/merge-books.mjs --input .cache/transformed.json --current src/data/books.public.json --output /tmp/books.merged.json",
+    "sync:content:clean": "rm -rf .cache/fetched .cache/transformed.json /tmp/books.merged.json"
   },
   "dependencies": {
     "@react-three/drei": "10.7.4",

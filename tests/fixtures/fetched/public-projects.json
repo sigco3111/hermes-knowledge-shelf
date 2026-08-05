@@ -1,0 +1,13 @@
+{
+  "id": "public-projects",
+  "sections": [
+    {
+      "heading": "컬렉션",
+      "body": "공개 repo 18개 · 언어 다양성 7종. 공개 가능한 작업으로 한정합니다."
+    },
+    {
+      "heading": "최근 추가",
+      "body": "1. hermes-knowledge-shelf · 2. claude-skills · 3. knowledge-graph · 4. clean-room-viz · 5. sample-tools"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ dist/
 .verify/
 test-results/
 playwright-report/
+.cache/
 .DS_Store
 *.log
 .vercel
