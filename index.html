@@ -2172,7 +2172,6 @@
     const shelfBoardTop = 0.47;
     const spacing = 1.5;
     const PAGINATED_LEAF_COUNT = 4;
-    const SPREAD_COUNT = PAGINATED_LEAF_COUNT + 1;
     const FLEXIBLE_PAGE_SEGMENTS = 18;
     const FLEXIBLE_PAGE_VERTICAL_SEGMENTS = 8;
     const PAGE_TURN_COMMIT_PROGRESS = 0.18;
@@ -4379,27 +4378,27 @@
     }
 
     function getSpreadLabels(book) {
-      return [
-        "Title page",
-        `${book.chapters[0]} · Plate`,
-        `${book.chapters[1]} · Notes`,
-        `${book.chapters[2]} · System`,
-        "Colophon"
-      ];
+      const labels = ["Title page"];
+      for (const chapter of book.chapters) {
+        labels.push(chapter);
+      }
+      labels.push("Colophon");
+      return labels;
     }
 
     function updatePageControls(announce = false) {
       const book = activeBook?.data || BOOKS[selectedIndex];
       const labels = getSpreadLabels(book);
+      const spreadCount = labels.length;
       const interactionLocked = mode !== "detail" || !readingOpen;
       const previousDisabled = interactionLocked || currentSpread === 0;
-      const nextDisabled = interactionLocked || currentSpread === SPREAD_COUNT - 1;
+      const nextDisabled = interactionLocked || currentSpread === spreadCount - 1;
 
       previousPageButton.disabled = previousDisabled;
       nextPageButton.disabled = nextDisabled;
       pageLabel.textContent = readingOpen ? labels[currentSpread] : "Closed";
       pageCounter.textContent = readingOpen
-        ? `${pad(currentSpread + 1)} / ${pad(SPREAD_COUNT)}`
+        ? `${pad(currentSpread + 1)} / ${pad(spreadCount)}`
         : "Click book to open";
       toggleBookButton.textContent = readingOpen ? "Close book" : "Open book";
       toggleBookButton.setAttribute("aria-pressed", String(readingOpen));
@@ -4420,7 +4419,7 @@
       );
 
       if (announce && activeBook && readingOpen) {
-        liveRegion.textContent = `Page ${currentSpread + 1} of ${SPREAD_COUNT}: ${labels[currentSpread]}.`;
+        liveRegion.textContent = `Page ${currentSpread + 1} of ${spreadCount}: ${labels[currentSpread]}.`;
       }
     }
 
@@ -4443,10 +4442,12 @@
 
     function turnPage(direction) {
       if (mode !== "detail" || !readingOpen) return;
+      const book = activeBook?.data || BOOKS[selectedIndex];
+      const spreadCount = getSpreadLabels(book).length;
       const nextSpread = clamp(
         currentSpread + direction,
         0,
-        SPREAD_COUNT - 1
+        spreadCount - 1
       );
       if (nextSpread === currentSpread) return;
       currentSpread = nextSpread;
@@ -5067,8 +5068,10 @@
       } else {
         if (pageDrag.direction === 0 && horizontalDistance >= 6) {
           const direction = deltaX < 0 ? 1 : -1;
+          const book = activeBook?.data || BOOKS[selectedIndex];
+          const spreadCount = getSpreadLabels(book).length;
           const directionAvailable = direction > 0
-            ? currentSpread < SPREAD_COUNT - 1
+            ? currentSpread < spreadCount - 1
             : currentSpread > 0;
           pageDrag.direction = directionAvailable ? direction : 0;
         }
