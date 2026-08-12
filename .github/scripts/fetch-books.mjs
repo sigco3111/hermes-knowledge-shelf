@@ -71,8 +71,11 @@ function buildHeaders(token) {
 export function pickToken(env, sigcoPat) {
   // SIGCO_GITHUB_PAT raises us to 5000 req/h; otherwise we fall back to the
   // workflow's auto-provided GITHUB_TOKEN (60 req/h, fine for a single pass).
-  if (sigcoPat) return { token: sigcoPat, label: 'SIGCO_GITHUB_PAT' }
-  if (env.GITHUB_TOKEN) return { token: env.GITHUB_TOKEN, label: 'GITHUB_TOKEN' }
+  // GitHub Actions injects unset secrets as the empty string, so we must
+  // treat '' (and any falsy value) the same as "not configured" and fall
+  // through to GITHUB_TOKEN instead of sending an empty Bearer header.
+  if (sigcoPat && sigcoPat.length > 0) return { token: sigcoPat, label: 'SIGCO_GITHUB_PAT' }
+  if (env.GITHUB_TOKEN && env.GITHUB_TOKEN.length > 0) return { token: env.GITHUB_TOKEN, label: 'GITHUB_TOKEN' }
   return { token: null, label: 'anonymous' }
 }
 
@@ -290,13 +293,16 @@ export function applyPatFallback(books, hasPat) {
 
 async function fetchLiveBooks(owner, env) {
   const sigcoPat = env.SIGCO_GITHUB_PAT
-  const { token, label } = pickToken(env, sigcoPat)
+  // Normalize the unset-secret empty string to null so downstream checks
+  // (`source.needsPat`, `hasPat`, and the pickToken selection) all agree.
+  const hasPat = Boolean(sigcoPat && sigcoPat.length > 0)
+  const { token, label } = pickToken(env, hasPat ? sigcoPat : null)
   console.log(`fetch-books: using ${label}`)
   const headers = buildHeaders(token)
   let remaining = Number.POSITIVE_INFINITY
   const results = []
   for (const source of BOOK_SOURCES) {
-    if (source.needsPat && !sigcoPat) {
+    if (source.needsPat && !hasPat) {
       console.warn(
         `fetch-books: ${source.id} requires SIGCO_GITHUB_PAT (private repo) — collecting a fallback request`,
       )
@@ -305,7 +311,7 @@ async function fetchLiveBooks(owner, env) {
     remaining = result.remaining ?? remaining
     results.push(result)
   }
-  return { books: results, hasPat: Boolean(sigcoPat) }
+  return { books: results, hasPat }
 }
 
 async function fetchMockBooks(mockDir) {
