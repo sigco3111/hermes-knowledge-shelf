@@ -2,7 +2,7 @@
 
 **에르메스 지식 서재** — 공개 가능한 익명 샘플 데이터 6권을 3D 책장과 HTML 리더로 탐색하는 클린룸 MVP. [MengTo/complete-shelf](https://github.com/MengTo/complete-shelf)의 단일-파일 experience를 한국어 6권 카탈로그로 clone·수정한 결과물입니다.
 
-- Live: https://hermes-knowledge-shelf.vercel.app
+- Live: https://sigco3111.github.io/hermes-knowledge-shelf
 - Source: https://github.com/sigco3111/hermes-knowledge-shelf
 
 ## 개요
