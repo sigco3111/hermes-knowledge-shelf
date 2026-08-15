@@ -6,12 +6,12 @@
     "summary": "익명화된 흐름으로 보는 에르메스의 공개 활동 샘플입니다.",
     "accent": "#D86552",
     "sections": [
-      { "id": "65a974d563ab", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 17 · 공개 저장소 249." },
-      { "id": "e44baa4bd81a", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 17 · 공개 저장소 252." },
       { "id": "5ac7f7c2418e", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 17 · 공개 저장소 270." },
       { "id": "182faaf885f7", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 17 · 공개 저장소 264." },
       { "id": "905c01625bbf", "heading": "공개 지표", "body": "pinned 100 · 최근 push 5 · 팔로워 17." },
-      { "id": "86c9c6dfa995", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 17 · 공개 저장소 261." }
+      { "id": "86c9c6dfa995", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 17 · 공개 저장소 261." },
+      { "id": "cc5cfdbc7bdd", "heading": "흐름", "body": "최근 5개 공개 저장소 push · 팔로워 16 · 공개 저장소 261." },
+      { "id": "16393a199371", "heading": "공개 지표", "body": "pinned 100 · 최근 push 5 · 팔로워 16." }
     ]
   },
   {
@@ -33,12 +33,12 @@
     "summary": "공개 가능한 실험과 도구를 주제별로 탐색하는 카탈로그입니다.",
     "accent": "#C86C43",
     "sections": [
-      { "id": "063d4460c98a", "heading": "최근 추가", "body": "1. fruitbox · 2. batgrl-gallery · 3. clipboard-history-mac · 4. clipboard-history · 5. agent-device" },
       { "id": "a53d6a1602ed", "heading": "최근 추가", "body": "1. engineworks-kr · 2. chiptycoon-kr · 3. fintech-world-korea · 4. fruitbox · 5. batgrl-gallery" },
       { "id": "34fb4a23f448", "heading": "컬렉션", "body": "공개 repo 100개 · 언어 다양성 9종." },
       { "id": "6535eed87c48", "heading": "최근 추가", "body": "1. EarthThreeJS · 2. BuildingGeneratorThreeJS · 3. BookcaseThreeJS · 4. BasicProceduralBuilding · 5. AvatarCastingAbilitiesThreeJS-korea" },
       { "id": "cb23e71e0554", "heading": "최근 추가", "body": "1. 3d-matrix-rain · 2. aurora-fluid · 3. fractal-tree · 4. double-pendulum-chaos · 5. cloth-simulation" },
-      { "id": "5579d04646d3", "heading": "최근 추가", "body": "1. cable-globe · 2. co2-board · 3. gazette-trend-analyzer · 4. chiptycoon-kr · 5. engineworks-kr" }
+      { "id": "5579d04646d3", "heading": "최근 추가", "body": "1. cable-globe · 2. co2-board · 3. gazette-trend-analyzer · 4. chiptycoon-kr · 5. engineworks-kr" },
+      { "id": "763df9b9fc91", "heading": "최근 추가", "body": "1. diablock · 2. 3d-physics-lab · 3. capitalism-web · 4. age-of-exploration-lite · 5. enterprise_ceo" }
     ]
   },
   {
